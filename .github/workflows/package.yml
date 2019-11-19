@@ -1,0 +1,45 @@
+name: Electron CD
+
+on:
+  push
+  # push:
+  #   tags:
+  #     - "*"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macOS-10.14, windows-2016, ubuntu-18.04]
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: Use Node.js 10.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: yarn install
+        run: |
+          yarn install
+      # - name: Package
+      #   run: |
+      #     yarn package
+      - name: Upload Release
+        uses: videomanagertools/upload-to-release@master
+        with:
+          # repo username/name
+          name: CatbuilderBeyound2/actions
+          # directory of all your files you want to upload (not recursive only flat, directories are skipped)
+          path: ./out/${{matrix.os}}
+          # can be enum of published, unpublished, created, prereleased
+          action: unpublished
+          # release tag
+          release_id: 1.0.0
+          # release repository name
+          release-repo: CatbuilderBeyound2/actions
+          # secret for your github token to use
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
